@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [gateway, document, worker]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -e shared/docuparse_contracts
+          pip install -e "services/${{ matrix.service }}[dev]"
+
+      - name: Lint
+        working-directory: services/${{ matrix.service }}
+        run: ruff check .
+
+      - name: Test
+        working-directory: services/${{ matrix.service }}
+        run: pytest

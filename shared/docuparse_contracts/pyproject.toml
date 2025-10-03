@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "docuparse-contracts"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.7"]
+
+[tool.setuptools.packages.find]
+where = ["."]
