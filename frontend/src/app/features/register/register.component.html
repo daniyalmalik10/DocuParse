@@ -1,0 +1,75 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="w-full max-w-sm bg-white rounded-xl shadow-md p-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Create your account</h1>
+
+    @if (error()) {
+      <div class="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        {{ error() }}
+      </div>
+    }
+
+    <form (ngSubmit)="submit()">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          required
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          required
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="confirm"
+          >Confirm password</label
+        >
+        <input
+          id="confirm"
+          type="password"
+          required
+          [value]="confirm()"
+          (input)="confirm.set($any($event.target).value)"
+          [class.border-red-400]="passwordMismatch()"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          autocomplete="new-password"
+        />
+        @if (passwordMismatch()) {
+          <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
+        }
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="loading() || passwordMismatch()"
+        class="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+      >
+        @if (loading()) {
+          Creating account...
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+
+    <p class="mt-4 text-center text-sm text-gray-500">
+      Already have an account?
+      <a routerLink="/login" class="text-indigo-600 hover:underline">Sign in</a>
+    </p>
+  </div>
+</div>
