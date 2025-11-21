@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   AccessTokenResponse,
@@ -35,10 +35,13 @@ export class ApiService {
     return this.http.get<User>(`${this.base}/auth/me`);
   }
 
-  uploadDocument(file: File): Observable<UploadResponse> {
+  uploadDocument(file: File): Observable<HttpEvent<UploadResponse>> {
     const form = new FormData();
     form.append('file', file);
-    return this.http.post<UploadResponse>(`${this.base}/api/documents/upload`, form);
+    const req = new HttpRequest<FormData>('POST', `${this.base}/api/documents/upload`, form, {
+      reportProgress: true,
+    });
+    return this.http.request<UploadResponse>(req);
   }
 
   listDocuments(): Observable<DocumentListResponse> {
