@@ -1,2 +1,124 @@
-<h1 class="text-2xl font-bold text-gray-800 mb-4">My Documents</h1>
-<p class="text-gray-500">Document list coming in Phase 7.</p>
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">My Documents</h1>
+    <a
+      routerLink="/upload"
+      class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+    >
+      Upload Resume
+    </a>
+  </div>
+
+  <!-- Error banner -->
+  @if (error()) {
+    <div class="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Loading spinner -->
+  @if (loading()) {
+    <div class="flex justify-center items-center py-16">
+      <svg
+        class="animate-spin h-8 w-8 text-indigo-500"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        />
+      </svg>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (isEmpty()) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <div class="text-5xl mb-4">📄</div>
+      <p class="text-gray-600 text-lg font-medium mb-1">No documents yet</p>
+      <p class="text-gray-400 text-sm mb-6">Upload your first resume to get started.</p>
+      <a
+        routerLink="/upload"
+        class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+      >
+        Upload Resume
+      </a>
+    </div>
+  }
+
+  <!-- Documents table -->
+  @if (!loading() && documents().length > 0) {
+    <div class="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Filename</th>
+            <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Uploaded</th>
+            <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Size</th>
+            <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+            <th class="px-5 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          @for (doc of documents(); track doc.document_id) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-5 py-4 text-sm font-medium text-gray-800 max-w-xs truncate">
+                {{ doc.filename }}
+              </td>
+              <td class="px-5 py-4 text-sm text-gray-500 whitespace-nowrap">
+                {{ formatDate(doc.uploaded_at) }}
+              </td>
+              <td class="px-5 py-4 text-sm text-gray-500 whitespace-nowrap">
+                {{ formatSize(doc.size) }}
+              </td>
+              <td class="px-5 py-4">
+                @switch (doc.status) {
+                  @case ('pending') {
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                      Pending
+                    </span>
+                  }
+                  @case ('processing') {
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 animate-pulse">
+                      Processing…
+                    </span>
+                  }
+                  @case ('completed') {
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                      Completed
+                    </span>
+                  }
+                  @case ('failed') {
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                      Failed
+                    </span>
+                  }
+                }
+              </td>
+              <td class="px-5 py-4 text-right whitespace-nowrap">
+                <a
+                  [routerLink]="['/documents', doc.document_id]"
+                  class="text-sm text-indigo-600 hover:text-indigo-800 font-medium mr-4 transition-colors"
+                >
+                  View
+                </a>
+                <button
+                  (click)="confirmDelete(doc)"
+                  [disabled]="deletingId() === doc.document_id"
+                  class="text-sm text-red-500 hover:text-red-700 font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {{ deletingId() === doc.document_id ? 'Deleting…' : 'Delete' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
