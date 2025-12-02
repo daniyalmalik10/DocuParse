@@ -55,4 +55,8 @@ export class ApiService {
   deleteDocument(id: string): Observable<void> {
     return this.http.delete<void>(`${this.base}/api/documents/${id}`);
   }
+
+  rerunExtraction(id: string): Observable<UploadResponse> {
+    return this.http.post<UploadResponse>(`${this.base}/api/documents/${id}/rerun`, {});
+  }
 }
